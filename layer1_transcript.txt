@@ -1,0 +1,707 @@
+Siddharth Pg (You): Okay. Uh, let's start with the tensions.
+Siddharth Pg (You):  Who is the first reader of the platform's output? We said the platform puts noise filtering, impact, and priority first.
+Siddharth Pg (You):  And in item 10 we said the engineer's immediate need is a debugging direction.
+Speaker 2:  Okay, so—
+Siddharth Pg (You):  Yeah.
+Speaker 2:  So first reader would be our AI/SRE agent, whatever we are making. And after that, like, once it would detect the issue or whatever bug has arrived, based on that it will assign to that engineer or to that concerned team. So, like, basically these are two separate things.
+Speaker 2:  This is, like, my opinion. You guys can add on it.
+Siddharth Pg (You):  Yeah. I think the first reader will be our platform itself, because in order to give the engineer a direction, it first needs to read and process the impact and priority. And then according to the impact, priority, and the patterns which it has observed, only then it can give the engineer a direction, right?
+Speaker 2:  Right. And assign an engineer, or whatever it is.
+Siddharth Pg (You):  Yeah. So in the first 5 minutes, the agent acts on the output and it suggests fixes based on the hypothesis, and then it goes to the engineer.
+Speaker 2:  Right. After doing changes by agent?
+Speaker 2:  After what?
+Siddharth Pg (You):  Uh, didn't get—
+Speaker 2:  Like, after doing changes by agent, or it— who is the reviewer here?
+Speaker 2:  Like, human, right?
+Siddharth Pg (You):  Reviewer is a human. So basically what this agent does whenever there's some bug, it identifies the logs, everything, localizes the problem, and then it fixes it in the sandbox environment, right?
+Speaker 2:  Yes.
+Siddharth Pg (You):  And then after the fix is done, then that is approved by the human engineer.
+Speaker 2:  Just before raising a PR, something like that.
+Siddharth Pg (You):  Yeah. Then if that guy approves it, then it goes to the recovered state.
+Speaker 2:  So the conflict here was, like, we were not able to clearly identify the first, like, starting point of this AI/SRE line.
+Speaker 2:  Now we have identified it.
+Siddharth Pg (You):  Yeah.
+Speaker 2:  I think, Shahans, we have spoken about it, right? Like, first, what did the pipeline— Yes, yes. We spoke, but I think maybe we were discussing too many times the same architecture, so we— Yes, yes.
+Speaker 2:  We have skipped some questions also.
+Siddharth Pg (You):  Yeah, yeah. It must have misunderstood, like, what we were trying to say.
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  Yeah, yeah, fine. ऐसे ही ये नेम करते हुए जाएंगे, सो डिटेल में होगा। Okay.
+Siddharth Pg (You):  Let's move to T2: restore the service or fix the cause. We said the workflow runs diagnose, fix, test, approve, deploy.
+Siddharth Pg (You):  Recovery arrives only through a new fix. Conflict is in the reference scenario: a deployment caused the failure.
+Siddharth Pg (You):  Undoing a change and repairing a cause are different outcomes with different speed and risk. The notes never separate them.
+Siddharth Pg (You):  Settle: what does "recovered" mean in 17 and 20? Users stop seeing errors, or the defect is gone, or those the same moment?
+Speaker 2:  Okay, so basically it is saying, uh, so that deployment— so, okay, just two things. Like, Rohan, you can also add on this. Like, if a deployment is failing, okay, we have one issue, okay, and the deployment itself is failing, so it won't be kept dry.
+Speaker 2:  So, uh, so the previous version will still be there. Am I wrong?
+Speaker 2:  So, like—
+Siddharth Pg (You):  No, no. Previous version will be if deployment is failing. In that production, the previous image is running there.
+Speaker 2:  Yeah, right.
+Siddharth Pg (You):  Which is not affected with the current build image.
+Speaker 2:  Right. So, so no user is affected, right? This is—
+Siddharth Pg (You):  Yes, yes.
+Speaker 2:  So, uh, I think— so what we suggested is the flow: run diagnose, that will happen, fix, test, approve, and then deploy. So this is the correct flow, right? And what it is suggesting is, let's say, uh, if the broken pipeline has already been shipped, okay, that is not the case in our example, right?
+Speaker 2:  We are assuming, like, after complete successful deployment, the code will be shipped to production. And if the deployment itself is failing, so the code won't— so this will not affect any user, right?
+Speaker 2:  So I don't think we need to undo our changes. It's just we can fix it, test it, and deploy.
+Siddharth Pg (You):  Yes, yes. After fixing, like, we have spoken about, like, previous questions. Like, after approval only, we will push that into production, or we will run some pipelines.
+Siddharth Pg (You):  If that pipeline fails, it will not impact the current image in production.
+Speaker 2:  Mm-hmm. Right, exactly. Like, there is a second case also.
+Speaker 2:  Let's say you are able to deploy it, okay? It didn't break during deployment phase.
+Speaker 2:  It, like, when users are using it, okay? At that point, maybe then you have to do that undo thing, shift to previous image, and then fix, test, and do everything.
+Speaker 2:  But this is not our example, I think.
+Siddharth Pg (You):  Yeah, that would be also a case. Like, after pushing it to production, if something breaks, just we need to revert and then we need to run it again.
+Speaker 2:  Yeah, yeah. But that is not AI/SRE, right?
+Siddharth Pg (You):  Yeah, that is not AI/SRE.
+Speaker 2:  Yeah, that is something else. So, yeah. Basically, the AI/SRE in the sense it is, it will identify the issue and it will assign to the right on-call person.
+Siddharth Pg (You):  Yeah, during deployment.
+Speaker 2:  During deployment.
+Siddharth Pg (You):  Yeah, exactly.
+Speaker 2:  It will fix the code as per the— it will pull out the logs from the respective microservice, and it will fix as per the issue, and then it will assign to an on-call person. When it will approve, the cycle will repeat until the deployment.
+Siddharth Pg (You):  Yeah, exactly. So, so that undo thing is not required in our—
+Speaker 2:  Yes.
+Siddharth Pg (You):  In our example, right?
+Speaker 2:  We are just stopping an agent after fixing it. We are not involving an agent entire deployment process.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  So after deployment, something breaks, the agent will be able to collect the logs again. The agent will be in the loop. After it will fix, and it will come to the human.
+Speaker 2:  After approval, then deployment. Something like that, I guess, if I'm not wrong.
+Siddharth Pg (You):  So basically, if I conclude in T2, so in our agent, recovered means if there is an error in production, then our agent fixes the error, and then, uh, the engineer approves the solution or not. So we don't go to the previous state. That is not what our agent is supposed to do.
+Speaker 2:  Right.
+Siddharth Pg (You):  Mm-hmm. Okay. So T2 is basically, uh, the defect is gone.
+Siddharth Pg (You):  When we say recovered, that means the defect is gone.
+Speaker 2:  Right.
+Siddharth Pg (You):  Okay.
+Speaker 2:  Yes, recovered in the sense defect is gone.
+Siddharth Pg (You):  So T3 is a demo of the MVP or of the vision. Said question 16 scopes the MVP around evidence, triage, and summaries. 17 demands an end-to-end demo ending in verified recovery. Conflict: the MVP as described cannot produce a demo as described.
+Siddharth Pg (You):  Settle: which capabilities must exist for real, and which can be shown manually or simulated? Does management judge investment on the demo or the MVP?
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  I think they do it on the demo, right? Because what is working is more important.
+Speaker 2:  Yes. Like, after building something, we'll give a demo on the feature.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  I think, Shahans, like, we have discussed this question on a budget, right? If we will develop any product like MVP, it depends upon the budget.
+Siddharth Pg (You):  Right. Like, we will be creating an MVP, and then we will be showing the demo, and then budget thing will come up.
+Speaker 2:  Yeah, budget thing will come up. Based on the budget allocation, we will continue in the development. If something change in a plan, or if something change in an architecture, then we need to change an architecture and—
+Siddharth Pg (You):  Okay, so it's like a step-by-step process. First we show the MVP. Once the MVP is accepted, then we build the MVP and show the demo.
+Siddharth Pg (You):  And then the next judgment takes place.
+Speaker 2:  Yeah. Based on the budget constraints.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  And the client, or, or, or, let's say we are giving a demo, he needs to— they need to satisfy. It depends upon the budget and something like that.
+Siddharth Pg (You):  Let us also answer this: which capabilities must exist for real? Like, what are we going to put in the MVP? Like, it has to match the demo, right?
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  Yeah. So I think it is, first, whenever there's an error, it identifies the logs, gathers all the evidence across different microservices, all the failed components, puts all of them together. And since the logs are very huge, it identifies the exact place where there is an error.
+Siddharth Pg (You):  And since, uh, we also connected it with the system, it identifies patterns and checks if any of these errors has occurred in the past. And based on that, then it also calculates the impact of, I mean, let's say, for example, if the payment gateway is failing, is something else also failing with that?
+Siddharth Pg (You):  It analyzes what all components are linked to it and the impact of that failure. And based upon that impact and the past trends, it makes up a bunch of hypotheses and classifies the error.
+Siddharth Pg (You):  As you guys said, P0, P1.
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  Uh, yeah. Then it picks each hypothesis and makes a sandbox environment and fixes that error, and then gives it to human for approval. This is the MVP.
+Speaker 2:  Yeah.
+Siddharth Pg (You):  Okay. But don't you guys think this is too much for an MVP? Like, I basically said the en— I said about the entire SRE.
+Speaker 2:  Mm-hmm. See, uh, maybe in MVP we can remove one layer, like that fixing layer. Like, identifying the issue is bare minimum, right?
+Speaker 2:  And reassigning it to the concerned person.
+Siddharth Pg (You):  No, no. But in question 17, they are demanding a verified recovery. So we need to have fixing also in MVP.
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  That's a thing.
+Speaker 2:  Yeah.
+Siddharth Pg (You):  I think MVP में past trends का we can remove.
+Siddharth Pg (You):  Key from the logs, pattern recognition, and all of those.
+Speaker 2:  No. If something, if something evidence from, like, found from the past data, that would be the case, right?
+Siddharth Pg (You):  Mm-hmm. Then I think the ownership part we can leave.
+Speaker 2:  Like reassigning.
+Siddharth Pg (You):  No. Like, अभी whenever there's an error, पहले तो हम own— like, the engineer जिसको हम alert करेंगे, वो कैसे alert करेगा is, like, वो service किसने बनाया, commits, PRs देख के वो उस engineer को ढूंढेगा ना? अगर वो मिला तो मिला, वरना on-call किसी को बुलाएगा।
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  तो ये part MVP में निकाल सकते हैं हम लोग, कि ownership का छोड़ो, जिसने भी बनाया होगा, fix कर दो direct।
+Speaker 2:  अच्छा, without approval of an engineer, like—
+Siddharth Pg (You):  No, approval will be needed, but—
+Speaker 2:  Yeah, yeah, approval.
+Siddharth Pg (You):  Let anybody approve, not a specific person.
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  MVP के लिए just focus on the fixing part. Approval is different, different thing.
+Speaker 2:  Yes, yes, yes. Got it, got it. After just, just collect the logs, or just, just collect the— what are the evidence you need?
+Speaker 2:  Just, I need fix, that's it.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Do anything. Or before pushing, I will involve a human.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Uh, that, that makes sense.
+Siddharth Pg (You):  Yeah. So looking at the PRs, old commits, ये सब निकाल सकते हैं।
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  That was a heavy, uh, rotation, I guess. And agent can— agent should identify the repository owner, and then—
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  He need to identify the— and agent should identify the commits, like, maybe.
+Siddharth Pg (You):  Yeah, all of them are not needed for MVP because they take a lot of time also.
+Speaker 2:  Mm-hmm. Yes.
+Siddharth Pg (You):  Shahans, what do you say?
+Speaker 2:  Mm-hmm. ठीक है, like, I also agree with this. क्योंकि हमें recovery show करना है, तो we have to fix.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  But assigning, मतलब reassigning, commits देखना, and वो सब, I think it's not required in MVP.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Maybe in later, we can add that.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  I agree.
+Siddharth Pg (You):  Yeah.
+Speaker 2:  Yeah, I agree.
+Siddharth Pg (You):  Okay. So T4 prohibited or merely approval gated? Uh, we said in 19, it was treated as already covered.
+Siddharth Pg (You):  Which key actions need human approval? Conflict: the question asks what the platform must never do even with approval.
+Siddharth Pg (You):  Never and only with a yes are different categories. So is there any action no approval should unlock?
+Siddharth Pg (You):  What property makes an action belong there rather than behind a gate?
+Speaker 2:  I'm going through question number 19, what was it? So the question number 19 is, an AI system is capable of performing actions that could damage production.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Which action should the platform explicitly prohibit? So what we said is, as we are not giving the deployment keys to the AI/SRE, there will be one human which will take the final decision, right?
+Siddharth Pg (You):  Mm-hmm. Yes.
+Speaker 2:  I think this is what we were discussing. We had discussed this a lot of times. So at that point, we just said, yes, let's, uh, this is what we have discussed.
+Speaker 2:  Or something like that we were doing.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  So, mm-hmm. So, like, the action which this platform should expi— what we can explicitly prohibit is, like, it should not deploy, uh, it should not have the deployment access. Only one human should have the deployment access after approving whatever changes it has suggested or has done.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  This is what we discussed. Right, Rohan?
+Speaker 3:  Yes, yes, yes. Just, the agent should come till the fix is, fix is done. Like, after fix is done, after raising a PR, the human should approve.
+Speaker 3:  Without approval, it should not merge into the main branch or the production branch.
+Speaker 2:  Right, exactly. And then someone will take it to the deployment and actually—
+Speaker 3:  Yeah, yeah. At the end, deployment will be done by the human hands only.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 3:  So, because we can't directly trust the agent to just do entire loop, entire loop is yours, and just do whatever you want. We can't trust, trust, like that, right?
+Speaker 2:  Okay.
+Speaker 3:  We are stopping.
+Siddharth Pg (You):  Yeah. So what it must never do? So it must never deploy itself, even if the human says yes.
+Siddharth Pg (You):  Even if the engineer says deploy it, the agent should not. And it cannot also, because as you said, deployment keys उसके पास नहीं है।
+Speaker 2:  Right.
+Speaker 3:  Mm-hmm. Yes.
+Siddharth Pg (You):  Mm-hmm. And is there something else it should not do, even after the engineer says yes, do it?
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  Maybe, like, mm-hmm.
+Speaker 2:  Uh, like, I'm assuming कि agent—
+Siddharth Pg (You):  Maybe deleting a feature or something. कि ये काम नहीं कर रहा, तो निकाल ही दो इसको।
+Speaker 2:  Uh, I think इतना destructive नहीं होना चाहिए, but हाँ, ठीक है, makes sense. क्योंकि बहुत, मतलब, basically, हो सकता है वो ये feature काम न कर रहा हो, तो वो, मतलब, जैसे क्या होता है, code में काफी सारी dependencies होती हैं एक ही part की। तो वो उसको हटा के कहीं और rewrite करे, इससे बाकी चीजें missing होने के chances हैं।
+Speaker 2:  तो, yeah, makes sense, ये भी बोल सकते हैं हम।
+Siddharth Pg (You):  Uh, because, uh, as our MVP said कि किसी को भी identify करो। तो अगर मैंने code लिखा, और आप, आप दोनों review कर रहे हो, आप, you should not remove a feature. You should fix it.
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  So, even if the reviewer, whoever the reviewer is, even if they say remove this feature, the agent should not remove that feature.
+Speaker 2:  Mm-hmm. मतलब, उसको fix करना चाहिए, instead of removing or something.
+Siddharth Pg (You):  Yeah. It should not be an owned decision maker कि which feature has to be removed and all. It's just a fixing agent.
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Yes.
+Siddharth Pg (You):  Is there anything else?
+Speaker 2:  Mm-hmm. No, I think for this T4, this is it. If it genuinely, let's say, if it genuinely is not needed in a code base.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  A human says, like, just remove this part. In that case also, the agent should not remove that. Maybe it is causing some issue, the agent is not identified, but human has identified that.
+Speaker 2:  Just remove that part of code, or that part of feature. It is maybe dependent on other.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Ultimately, the thing is, this is actually like a doubt. Let's say the agent has written 10 lines of code.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Like, कुछ fix किया उसने. And now a senior engineer says कि this can be done in 5 lines, rewrite it, or something. So do we want to make this like a chatbot, or no?
+Speaker 2:  If it's a chatbot, then the engineer will talk to it and say कि this can be written in 5 lines, write it like this essay. If it's not a chatbot, then directly जो भी उसने दिया, human has to modify it manually.
+Siddharth Pg (You):  No, we were thinking.
+Speaker 2:  Which category?
+Siddharth Pg (You):  Compete, like a chatbot. Like, uh, if the complete AI agent changes, it should take human input and work accordingly. Like, human should not do manual, uh, you know, typing of code or something.
+Siddharth Pg (You):  It should just prompt it out.
+Speaker 2:  Mm-hmm.
+Siddharth Pg (You):  So, like a chatbot.
+Speaker 3:  Basically, we are putting a yes or no statement per every, uh, step doing.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 3:  Just a minute.
+Siddharth Pg (You):  Yeah, yeah.
+Siddharth Pg (You):  Yeah. So then I think, ऐसे चलेगा, if the engineer says कि remove this line of code.
+Siddharth Pg (You):  ऐसे चलेगा, as long as the— because whenever the code is modified, like, after the engineer discusses with it, वो sandbox में test करेगा ना उसको.
+Speaker 2:  हाँ, ideally.
+Siddharth Pg (You):  तो जब वो काम करेगा, तब भी वो approve करेगा.
+Speaker 2:  Mm-hmm. Right.
+Siddharth Pg (You):  तो feature removal नहीं करना चाहिए, but code में engineer can suggest कि ये line निकाल दो, ये line निकाल दो.
+Speaker 2:  Mm-hmm. और वैसे देखा जाए तो, मतलब, like, हम day-to-day भी coding करते ही हैं, तो, मतलब, मतलब, generally, कोई भी हम agent जैसे use करते हैं, तो वो कोई ऐसे feature remove करता है नहीं. मतलब.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  ठीक है, वो security की बात है, वो सही बात है. But generally, ऐसा नहीं होता. वो समझ लेता है code का structure देख के.
+Siddharth Pg (You):  नहीं, agent automatically नहीं बोल रहा. मैं बोल रहा हूँ कि अगर कोई engineer ही ऐसा है, बंदा, जो agent को बोले कि ये निकाल ही दे, तो तब agent को बोलना चाहिए, no, I cannot.
+Speaker 2:  Mm-hmm. ठीक है, I cannot. Mm-hmm.
+Speaker 2:  मतलब, code changes are acceptable.
+Siddharth Pg (You):  Mm-hmm.
+Speaker 2:  Code deletion भी acceptable है, but feature removal पूरा अगर वो कराना चाह रहा है, तो वो नहीं होना चाहिए. मतलब, kind of ये मान लो कि अगर जो deployment पटा है, the agent should work only on that particular feature, kind of that.
+Siddharth Pg (You):  Mm-hmm. Yeah.
+Speaker 2:  एक feature पटा है, तो वो दूसरे feature पे काम करने के लिए नहीं बोलना चाहिए, उस-उसमें. मतलब, kind of that.
+Siddharth Pg (You):  हाँ. This is a very, like, specific agent, SRE agent है ना. लोग इसको coding के लिए use करेंगे, तो फिर it, it becomes useless.
+Speaker 2:  Yes, exactly.
+Speaker 3:  Shahans and Siddharth, like, actually, I have a bus to Hyderabad. I will rejoin in half an hour. I will just, uh, board the bus, and then I will rejoin.
+
+
+
+
+
+Siddharth Pg (You): Yeah, so our T4 is basically, um, the agent must never deploy to production.
+Speaker 2:  Okay, but—
+Siddharth Pg (You):  —and if the engineer says do it, and if the engineer says key remove a feature, or if they suggest some major architectural change which contradicts the existing codebase, then the agent should, should deny. But, uh, yeah, if the engineer says key change this line of code, improve it, then the agent can delete a few lines and do it. But the overall major, like, architecture and the feature should not be changed, cannot be changed.
+Speaker 2:  Right.
+Siddharth Pg (You):  Hold on—
+Speaker 2:  Like, it's kind of a bug fixer, not a feature generator.
+Siddharth Pg (You):  Hmm, right, and also it should not fix anything outside of its scope. Let's say the error was in the payments, and payment का सब कुछ फिक्स हो गया। Now if the engineer says की okay cart में भी ये वाला कुछ fix कर दो, then that's not how the agent works.
+Siddharth Pg (You):  It's not like a general chatbot agent; it's a very specific agent, so out of the payments scope it should not work.
+Speaker 2:  Right, I agree.
+Siddharth Pg (You):  Okay, so T5: what are the exact points for a human? 22 answered: before deployment or any reversible action conflict. The question asks for exact points.
+Siddharth Pg (You):  Other decisions in your own workflow also have consequences. Calling an alert, noise, setting priority, paging people, declaring a root cause, closing the incident.
+Siddharth Pg (You):  Settle. For each step in your workflow, what is the cost if the platform gets it wrong and nobody checks?
+Siddharth Pg (You):  Does that cost justify a human there?
+Speaker 2:  Okay—
+Siddharth Pg (You):  22 can.
+Speaker 2:  So question number: some decisions could cause irreversible production changes. At which exact point should a human become involved, and why? Okay.
+Siddharth Pg (You):  ओके, so इसको cost perspective से answer करना है।
+Speaker 2:  Hmm, तो इसने क्या बोला, conflict क्या है? The question asks for exact points. Are there decisions in your own workflow?
+Speaker 2:  I also have consequences: calling an alert, noise, setting priority, paging people, declaring a root cause, closing the incident. तो like, अब तो हमने अपने MVP में ये हटा ही दिया है कि मतलब calling an alert या setting priority और team mapping करना और वो सब तो हमने हटा ही दिया है अपने P- मतलब MVP से, right?
+Siddharth Pg (You):  हाँ, नहीं, priority है।
+Speaker 2:  ठीक है—
+Siddharth Pg (You):  अरे, ये बोल रहा है, हाँ, priority है, लगाया था, हमने बात की थी। Paging people नहीं है, ये नहीं है। Declaring—
+Speaker 2:  ठीक है, root cause तो declare कर देना चाहिए, हाँ।
+Siddharth Pg (You):  Closing भी है।
+Speaker 2:  Hmm.
+Siddharth Pg (You):  हाँ, तो basically ये पूछ रहा है कि।
+Speaker 2:  Human content—
+Siddharth Pg (You):  इसने priority set कर दी। Let's say एक simple bug था, like, और let's say, और नहीं, major bug था। इसने उसको low priority पे set कर दिया, और एक simple change को high priority पे set कर दिया।
+Speaker 2:  Hmm—
+Siddharth Pg (You):  इधर human नहीं है, नहीं लगाया हमने human इधर। तो ऐसे-ऐसे करके ये गया। इसने वो simple वाले को पहले fix करने में time लगा दिया।
+Speaker 2:  Hmm—
+Siddharth Pg (You):  अब नया high priority वाला पीछे रह जाएगा, basically।
+Speaker 2:  Right.
+Siddharth Pg (You):  तो इसका cost क्या है, इस mistake का? और इधर क्या human लगाना चाहिए? क्या cost bear करना cheaper है कि human को bear करना cheaper है, वो पूछ रहा है।
+Speaker 2:  Hmm, I think cost bear करना, uh, I think cost bear करना cheaper होना चाहिए। Like, human के तो थोड़ा ज्यादा ही पैसे लग जाएंगे ना? मतलब फिर AI agent का फायदा ही क्या है, अगर मान लो।
+Speaker 2:  वैसे तो देखा जाए तो हर step पे human validation चाहिए ही। 
+Speaker 2: ठीक है कि वो priority उसने सही set करी या नहीं करी, या root cause सही set की, मतलब find किया या नहीं करा। ठीक है? और सही से close किया है।
+Speaker 2:  But अगर हम लोग उसे agentic बना रहे हैं, तो we should not involve human in every layer. मतलब, this is my opinion, कि नहीं होना चाहिए वो हर जगह involved।
+Speaker 2:  तो exact points for a human होने चाहिए कि जब हमारा काम हो जाए। Like, like the code changes are done, it should review those changes, and the root cause— it should analyze the root cause and check, like, if the changes are done according to the root cause analysis.
+Speaker 2:  And after that, it should— the pipeline should run all the local tests or whatever tests, unit tests we have written. And after running that, the human should, like, approve it or— like, मतलब ये basic चीज़ें human को check करनी चाहिए कि like, code changes सही हैं, builds सही हैं सारे, और local testing में सारी चीज़ें चलनी चाहिए, RCA वगैरह के हिसाब से changes हैं।
+Speaker 2:  Like, this is my— like, human का काम होना चाहिए, because we have this AI agent, और based on human review, this agent should do the changes, whatever the— Hmm.
+Siddharth Pg (You):  —thing. Like, this is the exact requirement of a human in this complete pipeline.
+Speaker 2:  Okay, I think कि, uh, कहाँ पे, हाँ, setting priority पे अगर human लगा दें, तो इधर बीच में जो भी वो fixing वगैरह कर रहा होगा, उसमें तो बहुत time लगेगा। तो उसमें human को लाने की ज़रूरत नहीं है। तो अगर setting priority में लगा दें, और last में लगा दें, तो अच्छा होगा।
+Speaker 2:  क्योंकि ये setting priority depends on the organization, right? Uh, like, किसी की priority होगी payment fix करना, किसी की होगी कुछ और fix करना।
+Speaker 2:  ये agent को कैसे पता चलेगा? Like, let's say तीन-चार चीज़ें एक साथ fail हो गईं।
+Speaker 2:  तो फिर उसके पास organizational decisions तो agent के पास नहीं होंगे ना, कि ये लोग के mind में क्या है, क्या ज्यादा prioritize कर रहे हैं ये लोग। तो शायद इधर setting priority पे एक बार अगर human approve कर दे कि हाँ भाई, इसको high priority दे दें।
+Speaker 2:  See, because— Hmm—
+Siddharth Pg (You):  Like, अगर हम open standards देख लें, उसके हिसाब से काम करेगा agent। But हर एक organization का different standards होता है, मतलब different priorities होते हैं ना।
+Speaker 2:  Hmm, hmm.
+Siddharth Pg (You):  Like, if it's right, you have to tell me, because you are working. So—
+Speaker 2:  Hmm—
+Siddharth Pg (You):  ऐसे सोच रहा था मैं कि यहाँ भी लगा दें।
+Speaker 2:  Hmm, मतलब हाँ, लगा सकते हैं। और actually में जब हम लोग discuss भी कर रहे थे, तो we were thinking कि, uh, कि हमारे पास जैसे logs का access है, we are assuming we have— this agent has access to logs and metrics. Hmm, ठीक है।
+Speaker 2:  So in metrics, we generally have कि like, how many people will be using this feature, and things like that, okay?
+Siddharth Pg (You):  Hmm.
+Speaker 2:  तो ideally, uh, मतलब अगर उनके पास metric का access है, तो उसको पता रहना चाहिए कि कितने feature, मतलब इससे कितने लोग impacted हैं, और based on that वो priority assign कर रहे हैं। But as you suggested कि like, वो भी change हो सकता है, हो सकता है, uh, कोई और feature हो जो ज्यादा important हो, एक साथ दो चीज़ें फट गई हों। तो see, I agree, मतलब एक human को वहाँ पे बस approve करने के लिए लगा सकते हैं priority।
+Speaker 2:  और maybe हो सकता है तुम्हें at some point priority change भी करनी पड़ सकती है। 
+Speaker 2: ठीक है, there is something more important. तो I think yeah, वहाँ पे एक human को लगा सकते हैं, मतलब क्योंकि छोटा सा ही काम है, वो ज्यादा देर का भी नहीं है, ज्यादा time involved नहीं।
+Siddharth Pg (You):  हाँ, ये step 1 में ही होगा ना? Like, initial steps I mean।
+Speaker 2:  हाँ, मतलब हाँ, पर—
+Siddharth Pg (You):  तो ज्यादा time भी नहीं लगेगा।
+Speaker 2:  Notify तो करोगे एक human को, तो at the time of notifying, we can say कि this is the priority we are assigning, और you can reassign or approve to the further steps, kind of that thing।
+Siddharth Pg (You):  Hmm, so exact points are: when the agent sets priority, the human will verify priority, and then when the agent fixes the error, the human verifies the output as well।
+Speaker 2:  Right.
+Siddharth Pg (You):  Hmm, ये दो points पे humans रखेंगे हम।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Okay।
+Speaker 2:  So note T6 is who approves at 2 AM। Okay।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Q1.11 learn: towards the service owner or responsible engineer। Q1.2 left ownership models open। Conflict 1.3: sets the incident at 2 AM, the owner may be asleep, the on-call engineer may not own the code।
+Speaker 2:  Okay। Is the approver a role or a person?
+Speaker 2:  What happens when the role is unreachable and is waiting itself a decision? तो I think owner को देना is not correct, अगर हमने बोला भी है ये।
+Speaker 2:  It should be assigned to on-call engineer, because this is the work of an on-call engineer। तो—
+Siddharth Pg (You):  Right।
+Speaker 2:  Hmm?
+Siddharth Pg (You):  Right, right, right, बोल रहा है।
+Speaker 2:  Right, so right, it should be assigned to an on-call engineer, मतलब इसमें तो मुझे नहीं लगता कोई doubt है। क्योंकि अब हमने वो owner identify और वो सारी चीज़ हटा ही दी है। और as we discussed in last meeting also, कि जो on-call engineer होता है, generally वो वही होता है जिसको most of the चीज़ों का context रहे।
+Speaker 2:  He can take decisions। 
+Speaker 2: ठीक है, मतलब कोई ऐसे junior बंदे को नहीं बनाया जाता, या किसी ऐसे को जिसको context ही नहीं है। तो I think on-call engineer should be notified, and he should approve at 2 AM or whatever time it is।
+Siddharth Pg (You):  Okay, so then we are removing the entire paging people का scene from our agent।
+Speaker 2:  Right।
+Siddharth Pg (You):  कि when an error is there, don't— we are not sending it to check the comments कि who made that change, and all that।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Only on-call बंदे को उठाओ।
+Speaker 2:  Hmm, yes। फिर अगर वो on-call वाले को दिक्कत है, तो वो, वो आगे अपने हिसाब से देखेगा, वो हमारी दिक्कत नहीं है।
+Siddharth Pg (You):  Hmm, ठीक है, ठीक है, out of scope हो गया फिर वो।
+Speaker 2:  Yes।
+Siddharth Pg (You):  Hmm। ठीक है, so 2 AM पे on-call engineer पे जाएगा।
+Speaker 2:  Okay, which verification does 12 ask for? Okay, 12 है क्या, एक बार let me check। An AI system claims that it has repaired an application, but the application is still returning errors.
+Speaker 2:  How would you identif- uh, independently stabilize whether the repair worked? Okay, मतलब the agent is claiming कि उसने काम कर दिया है, but वो fail कर रहा है, तो हमें stabilize, मतलब देखना है कि repair सही से हुआ है कि नहीं हुआ।
+Speaker 2:  Okay। तो set repair incident and run regression tests before deployment। 
+Speaker 2: ठीक है, ये हम लोगों ने बोला होगा। Conflict describes a claimed repair while app still returns error। That is about live behavior after the change, not tests before it।
+Speaker 2:  Okay। What observable fact in production would prove recovery to a skeptical engineer?
+Speaker 2:  Okay, how long must it hold? 
+Speaker 2: ठीक है। तो देख, देखो, there are two things, right? मतलब what we are assuming is कि अगर वो fail हो रहा है, तो it is failing in deployment, it is not failing in, uh, after going to production।
+Speaker 2:  Okay, this is what we discussed अभी right now also, कुछ time पहले।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  ठीक है, and what it is saying is कि deploy हो गया है, but it still is failing। The feature is failing। But we are not working on the feature, we are working on the deployment।
+Speaker 2:  तो if the feature is failing, तो मतलब we are concerned only about the deployment। 
+Speaker 2: ठीक है, feature अगर fail हो रहा है, तो फिर वो अलग बात है, पर we are only checking deployments। ठीक है? तो, hmm, I think ये issue नहीं आना चाहिए।
+Siddharth Pg (You):  नहीं, वो जो error बोल रहा है ना, specifically कि error return किया उसने, तब क्या करोगे?
+Speaker 2:  मतलब अगर उसने, uh, मतलब तुम बोल रहे हो error return करेगा production में।
+Siddharth Pg (You):  Uh, ये पता नहीं चल रहा यार, ये question। Hmm। AI system claims that application is still returning।
+Siddharth Pg (You):  नहीं, production की बात छोड़ो, आप deployment में ही बोलो।
+Speaker 2:  अगर deployment में ही है, तो हम उसे deploy तो वैसे भी नहीं करने, मतलब जो हम लोगों ने, मतलब ये क्योंकि तब भी discuss किया ही होगा। तो मुझे जहाँ तक याद है, हमने यही discuss किया था कि हम वैसे भी सारे जो भी test हैं, जो regression test हैं, और वो सब, वो जो वो बंदा बैठा है before deployment, वो बैठ के सारी चीज़ें करेगा। 
+Speaker 2: ठीक है? मतलब ideally देखेगा वो। 
+Speaker 2: ठीक है?
+Siddharth Pg (You):  Hmm।
+Speaker 2:  और हो सकता है वो कुछ नए tests add भी करना चाहे। ठीक है, वो उसके ऊपर है। तो इसलिए हमने वहाँ पे human बंदे को रखा है।
+Speaker 2:  और अब मान लो उसके बाद भी अगर फट रहा है, तो फिर तो मतलब फिर से वही same pipeline trigger हो गया, I think। कोई और option तो नहीं है।
+Speaker 2:  मान लो अगर, uh, मतलब लेकिन अगर कुछ change किया है अगर, तो कुछ नए errors आएँगे इस बार। Like, there will be some progress, but हाँ, pipeline तो फिर same ही trigger होगी पूरी।
+Speaker 2:  अगर मान लो उस बंदे जैसे अभी identify नहीं हो पाया कि कोई दिक्कत है, तो।
+Siddharth Pg (You):  Hmm। But इधर देखो, इसने in production पूछा है।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Let's say deploy हो गया, production में भी हो गया, और कहीं पे external service का error आ गया, और production ही fail हो गया। अब, uh, question to tell original क्या है कि An AI system claims that it has repaired, but the application is still returning errors. How would you independently— हाँ, तो basically ऐसे समझ लो कि, मतलब जहाँ तक मैं समझा हूँ कि, let's say you are, uh, the agent has tested it, recovery हो गया।
+Siddharth Pg (You):  कुछ, let's say, let's say Gemini API बुला रहे हो आप, और वो काम कर रहा है locally। Deploy भी कर दिया, production भी चले गया।
+Siddharth Pg (You):  Let's say 5 घंटे बाद Gemini खुद ही down है। अभी तो काम नहीं कर रहा ना, application errors हैं।
+Siddharth Pg (You):  तो एक engineer ऐसा क्या fact देखेगा, what observable fact production में, कि वो trust करेगा कि recovery हो जाएगी?
+Speaker 2:  Hmm।
+Siddharth Pg (You):  मतलब समझ रहे हो क्या? अगर Gemini down है, तो हम कुछ भी नहीं करेंगे ना, wait ही करेंगे। तो trustable fact ये है कि Gemini तो फिर से up, ऊपर हो ही जाएगा।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  और trustable है, फिर हम थोड़ा chill करेंगे। तो ऐसा कौन सा fact engineer देख के बोलेगा कि हाँ, recovery तो हो जाएगी।
+Speaker 2:  Hmm। मतलब, uh, ऐसा कौन सा fact engineer देख के बोलेगा?
+Speaker 2:  मतलब।
+Siddharth Pg (You):  एक तो external service का ही हो गया कि हमारी गलती नहीं है, भाई, उन्हीं की गलती है, तो resolve होगा होने तक wait ही करो, और क्या कर सकते हैं?
+Speaker 2:  Hmm।
+Siddharth Pg (You):  हाँ, और generally reliable services ही use करते हैं organizations। Let's say अभी Google Gemini down हुआ है, तो of course it's Google, तो 10 मिनट में फिर से उठ जाएगा वापस।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  तो एक तो external services का हो गया कि, if it's an external service failure, then, uh, the engineer will wait for it, because they would be using reliable services anyways। So।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Uh, they won't, uh, be in doubt। तो that is one।
+Speaker 2:  Hmm। मतलब एक तो ये हो सकता है, और दूसरा क्या हो सकता है, मतलब बाकी तो अगर third party service नहीं फट रही है, तो कुछ अपना ही फट रहा होगा, इसका मतलब। Okay, और तो कोई हम चीज़ use नहीं करते शायद।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  वरना dependency का कुछ नया version आ गया, कुछ deprecate हो गया, ऐसे हो सकता है।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  कि हम जो function use कर रहे थे, वो अभी deprecate हो गया। But dependency तो वही version पे रहेगा ना, वो automatically थोड़ी change होगा।
+Speaker 2:  हाँ, वो नहीं होगा, वो कोई issue भी नहीं होगा। तो I think वैसे ही third party integration जो है, इसको हम बोल सकते हैं, मतलब कि, मतलब ये एक option है, मतलब कि, क्या बोल रहे थे हम उसको, कि हो सकता है, मतलब up हो सकती है service वापस फिर। Like, क्योंकि engineer is skeptical about it, तो।
+Siddharth Pg (You):  Hmm। But चलो, कोई और error अगर आ गया, और अपना HR ही बोल रहा है कि भाई, मैंने fix कर दिया, तो आप क्या करोगे check करने के लिए कि हाँ, इसने सच में fix कर दिया? Like, फिर से क्या code देखोगे पूरा, या फिर से logs देखोगे?
+Siddharth Pg (You):  क्या करोगे verify करने के लिए?
+Speaker 2:  मतलब अगर मैं एक बार AI से करा चुका हूँ, और फिर मुझसे फट ही रहा है, तो फिर तो manual ही पूरा testing करना is an only option। मतलब वहाँ तो फिर कोई alternate नहीं।
+Siddharth Pg (You):  Alternate।
+Speaker 2:  मतलब logs से देखना पड़ेगा। Logs देखो, फिर logs के बाद एक चीज़ ये कर सकते हो कि उसकी PR देख लो, क्या बोलते हैं, जो AI ने changes करे हैं। 
+Speaker 2: ठीक है, क्योंकि उसने कुछ मिलते-जुलते error होंगे, right? And।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  पर मतलब kind of high level तुम देखोगे तो logs और code ही देखना पड़ेगा। मतलब एक बार तुम replicate भी करके देखना चाहोगे उस case को, पर हाँ, करना तो शायद यही पड़ेगा, और कोई alternate नहीं है उसका। क्योंकि already अगर एक बार तुम करा चुके हो, तो दूसरी बार भी वो hallucinate करेगा, उसके काफी high chances हैं।
+Speaker 2:  या maybe अगर same log आ रहा है, तो तो कोई फायदा नहीं है। But maybe this time we are getting some different log।
+Speaker 2:  This happens a lot of times। Like, you are getting new log, तो कुछ तो progress है ना वो।
+Speaker 2:  तो maybe।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Trigger the same pipeline again। वो भी एक option है।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  मतलब दोनों option we have to keep। मतलब उस point पे शायद human को involve होना पड़ेगा। It's his call कि वो same pipeline दोबारा trigger करना चाहता है, और he wants to fix it manually।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  That point पे, मतलब it's a human call, मतलब वहाँ पे। क्योंकि of course time भी valuable होता है, और सब कुछ होता है, तो इसलिए। वहाँ पे थोड़ा decision सोच-समझ के लेना पड़ेगा।
+Speaker 2:  I think वहाँ पे human बन की जरूरत पड़ेगी।
+Siddharth Pg (You):  तो दो outcomes हैं इसके। अगर external service का है, तो मतलब हमारी गलती है ही नहीं, wait करो जब तक वो वापस नहीं अच्छा हो जाए। External service का नहीं है, तो खुद बैठ के verify करो।
+Speaker 2:  Verify।
+Siddharth Pg (You):  तो आप sum up कर दो ये T7।
+Speaker 2:  तो मतलब in this T7, what we are seeing, like, there are two possible cases। Uh, we have a third party integration in our service, and if that is failing, then the, uh, then the engineer can wait, or maybe connect to that service owner, like, by when it will be fixed। Uh, there is nothing to be done from our side, but let's say the changes are from, uh, uh, the issue is coming from our end, a third party service, or if there is no third party service involved,
+Speaker 2:  and it is completely us, and still it's failing. So there are two possible cases। Either, uh, the first time, uh, the issue has changed, like earlier we were getting some different errors, but now it's, it is some different error।
+Speaker 2:  So now, uh, that engineer, maybe that, uh, on-call engineer, someone has to decide, like, whether he wants to go manual on it, or maybe use the same AI SRE pipeline on it with the same, with the new logs, and, uh, and do the same thing, uh, with that pipe, uh, AI SRE, or do that manually, like, going through the codebase and do that deployment। And, and yes, this is how he can, we can fix that।
+Speaker 2:  Like, this can be the life cycle of, uh, that engineer, the one who is, uh, present there।
+Siddharth Pg (You):  Hmm।
+Siddharth Pg (You):  ये how long must it hold भी है?
+Speaker 2:  How long must it hold? Hmm। मतलब, क्या मतलब है इसका, how long must it hold का?
+Speaker 2:  Like, यहाँ पे तो ऐसा कुछ time से related मिलता-जुलता कुछ भी नहीं है। Like, 1.12 पे question में।
+Speaker 2:  लेकिन ये क्या पूछना चाह रहे हैं, वो समझ नहीं आ रहा।
+Siddharth Pg (You):  मतलब, let's say external service fail हो गया, और 5 मिनट हो गए, 10 मिनट हो गए। How long तक will you be confident कि भाई, ये वापस recover हो जाएगा? I think it's that question।
+Speaker 2:  मतलब।
+Siddharth Pg (You):  Let's say 20 मिनट हो गए, और historically, let's say it takes 40 minutes, so you'll be confident। और let's say 60 minutes हो गए, but historically 40 minutes ही हो रहे हैं। Now you'll start to question things।
+Siddharth Pg (You):  So वो है पूछ रहा है शायद, कि कितने time तक confident रहोगे कि recovery हो जाएगी?
+Speaker 2:  यार, ये तो मतलब थोड़ा answer करना मुश्किल ही है। Like, जैसे अभी कुछ time पहले cloud।
+Siddharth Pg (You):  Okay, so।
+Speaker 2:  हाँ। ChatGPT बहुत देर तक बनता, 7-8 घंटे।
+Siddharth Pg (You):  7-8 घंटे।
+Speaker 2:  तो मतलब, ये तो मतलब थोड़ा सा बोलना मुश्किल ही है कि कब तक हो पाएगा, या क्या होता है।
+Siddharth Pg (You):  So depends कर सकते हैं on personal experience and ये सब।
+Speaker 2:  हाँ। हाँ, मतलब इसका तो answer थोड़ा सा मुश्किल है। Exact time बता पाऊँ?
+Siddharth Pg (You):  58।
+Speaker 2:  Speed और safety, ठीक है। Uh, 18 measures: time and cost saved, item 8 prefers an unresolved issue over a wider regression। Okay, 18 क्या है, बोलो, 18 देख लेते हैं।
+Speaker 2:  Management wants to establish whether the platform is worth investing in, which measurable outcome would demonstrate its effectiveness। Okay, like, what we have achieved we have to show। 
+Speaker 2: ठीक है।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Okay। Conflict: a metric that rewards speed alone pushes against your own safety principle; quality stays comparable is not yet defined। Settle: what would count as the platform making things worse; how will, uh, that be measured alongside time saved।
+Speaker 2:  Okay।
+Siddharth Pg (You):  Uh, एक तो ये है, what would count as the platform making things worse is, let's say, when the platform, like, identifies an error and starts its process, and assigns priorities, and human approves priorities। Then sandbox में fix करके फिर human को approval के लिए देता है। और approval के time पे वो मतलब काम ही नहीं कर रहा, बस sandbox में ही काम कर रहा है वो।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  दूसरे code पे जब integrate हुआ, काम ही नहीं कर रहा। तो फिर सब time waste है। इससे अच्छा human ही बैठता starting से।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  तो उस case में, if it is not able to fix the error, even in the sandbox environment, or let's say after integrating with the rest of the code।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Then it's double effort।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Time wasted है बहुत।
+Speaker 2:  Time wasted, right।
+Siddharth Pg (You):  How will that be measured alongside time saved? Yeah, so same thing। If पूरा इतना time लगाने के बाद अगर उसने wrong दे दिया, अगर काम नहीं कर रहा, तो that's basically double the work।
+Siddharth Pg (You):  Time भी waste हो रहा है, और फिर बाद में engineer का time फिर से waste होगा।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  So I think that is a big।
+Speaker 2:  Big red flag।
+Siddharth Pg (You):  हाँ, success में count नहीं होगा फिर वो। तो success definition basically क्या है? When the amount of time the agent spends, it is actually successfully able to resolve the error, right?
+Siddharth Pg (You):  And even if it is not able to resolve the error, it has to stop and let the human know कि, uh, मतलब बीच में कहीं पे भी, let's say, उसके पास evidence कम हो गया, या hypothesis नहीं बन रही, तो just report to the human। Don't do it blindly।
+Siddharth Pg (You):  Because if you do it blindly without enough evidence, high probability कि you will get a wrong answer। और उसमें time भी waste हो रहा है, और फिर human का भी time लगेगा।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  तो instead of reaching to the point कि, like, human approval तक, उससे पहले ही, if the agent sees कि evidence नहीं है, या we are not able to converge to the right solution, just tell the human directly।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  मतलब, तो करने की जरूरत नहीं है।
+Siddharth Pg (You):  हाँ। नहीं हो रहा तो रहने दो वहीं पे।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  So question 18: measurement management wants to establish whether the platform is worth investing in, which measurable outcomes would demonstrate its effectiveness। He asked, I think it's time।
+Speaker 2:  It's the time saved। Like, as we know कि human, uh, time has also a value, right?
+Siddharth Pg (You):  Hmm।
+Speaker 2:  मतलब, आप किसी engineer को वहाँ रख रहे हो, तो उसके time की भी value होती है। तो वही आप एक चीज़ में दिखा सकते हो कि भाई, मैंने human का इतना time save कर लिया।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Like, this is it। कि, मतलब, without it कितना time लगता है, और इसके साथ हमने इतना time save करा। Because everything has a cost, right?
+Siddharth Pg (You):  हाँ, and as Rohan also said, कि timelines होते हैं। अगर let's say previous scene में human को 10 घंटे लग गए, और अगर हमारा agent 5 घंटे में भी कर रहा है।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  So that's very nice। 5 तो it's too optimal। Let's say 7-8 में भी कर रहा है, फिर भी it's time saved।
+Siddharth Pg (You):  20-30% time saved।
+Speaker 2:  हाँ, मतलब कुछ तो time save हो रहा है। मतलब, किसी भी तरीके से अगर वो human की help कर पा रहे हैं, तो मतलब it's a plus। Ultimately, कर पा रहे हैं।
+Siddharth Pg (You):  And efficiency, accuracy also। कि अगर एक task एक error पूरे process pipeline में जाके fix होके human approval तक गया है, और human ने approve कर दिया, तो उसकी accuracy very high है। तो वो भी एक measurable outcome है, the accuracy।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Hmm।
+Siddharth Pg (You):  क्या बोलते हो?
+Speaker 2:  Hmm। सही है। मतलब, सही बात लग रही है कि, मतलब कि, क्योंकि दो point पे human involved भी है ही, तो ऐसा भी नहीं है कि बिल्कुल ही blindly हम trust भी कर रहे हों।
+Speaker 2:  है ना?
+Siddharth Pg (You):  Hmm।
+Speaker 2:  तो, and, uh, तो मतलब कि हाँ, ठीक ही बात है कि accuracy matters the most। जैसे तुमने बोला कि अगर वो last तक human approve कर भी रहा है, तो मतलब, he is also kind of aligned with the solution, right?
+Siddharth Pg (You):  Right।
+Speaker 2:  तो, तो ठीक ही है, I think। यही एक point है, मतलब कि deadlines भी होती हैं, और multiple और काम भी रहते ही हैं और भी तो। तो।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  जो time save है, basically, वो और कहीं use हो सकता है। तो हाँ, ये point ठीक ही है।
+Siddharth Pg (You):  ठीक है, सही। और accuracy का, accuracy मैं इसलिए बोल रहा था क्योंकि solution जो है, वो discuss नहीं कर रहे ना human के साथ।
+Speaker 2:  नहीं।
+Siddharth Pg (You):  Human बस पहले point पे priority verify करेगा, उसके बाद ये खुद से solution build करेगा।
+Speaker 2:  Right।
+Siddharth Pg (You):  तो वो solution building के time human का approval नहीं है। तो इसलिए जब final solution build हो जाएगा, then accuracy matters, I think।
+Speaker 2:  Hmm। सही बात है। मतलब, अगर without any iteration human approve कर पा रहा है, तो that is ideal।
+Siddharth Pg (You):  That's very ideal।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Right।
+Siddharth Pg (You):  So for T8, it is time taken to solve, and the accuracy, if, uh, the agent is accurately able, if the human approves the agent's solution, then that means, uh, it saved the human's time, and also it was highly accurate। Uh, but in the other case, if let's say the human rejected the agent's solution, then that is a time waste for, uh, both the agent and the human, because now the human will have to spend his time or her time on it again. So that's double work।
+Siddharth Pg (You):  So time and accuracy are two of the measurable outcomes।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Yeah. So, okay, Rohan is here।
+Speaker 2:  Yeah, my voice is audible?
+Siddharth Pg (You):  Yeah, yeah, audible।
+Siddharth Pg (You):  So we'll start from T9 only। We completed till T8।
+Siddharth Pg (You):  Is that okay, bro?
+Speaker 2:  Yeah, yeah, okay, okay। But I will not be speaking, like, actually I'm in a public space।
+Siddharth Pg (You):  Yeah, it's okay. If you're comfortable, then okay, but if you're just listening to us also, it's fine।
+Speaker 2:  Yeah, yeah, I will, I will, I will listen to you।
+Siddharth Pg (You):  Okay, okay, done।
+Speaker 2:  Yeah. So something where I will speak about a time-based recording incident on Nagaland। Question 1 starts from log history and past fixes for similar errors।
+Speaker 2:  Conflict: the reference scenario is a fresh configuration change। History में हो nothing similar।
+Speaker 2:  Recent change में matter more। Okay।
+Speaker 2:  What share of real incidents repeat a known pattern? Does the problem statements hold for both kind?
+Speaker 2:  Okay। So like, as we discussed, कि history में से हम देखेंगे, हम देखेंगे क्या history में ऐसे incidents हुए हैं, and based on that हम fix करने की कोशिश करेंगे।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  But I think what this is saying is कि एकदम अगर fresh incident है, then what will you do? मतलब, कुछ similar नहीं है, तो recent changes, basically जो code changes हैं, that will matter more। Okay।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  हाँ, ठीक है, कोई दिक्कत नहीं है उसमें। तो इसमें conflict क्या है, मुझे समझ नहीं आया। मतलब, of course, we are।
+Siddharth Pg (You):  नहीं, conflict क्या है? I think one thing we forgot to mention clearly is, हमने क्या बोला, error आ गया, इसने logs देख लिए, इसने pattern देख के next step में गया, ये। But एक और हमने miss किया कि अगर pattern नहीं है, फिर भी ये खुद का दिमाग तो लगाएगा ना।
+Siddharth Pg (You):  वो हमने mention करना भूल गए हम, वो। तो इसलिए ये उसको conflict की तरह ले रहा है।
+Speaker 2:  Okay, okay। मतलब, हमने बोला कि।
+Siddharth Pg (You):  कि भाई, हाँ, कि reference में new configuration हो गया, तुम लोग ने, तुम लोग बोल रहे हो history से निकालेगा ये, तो कैसे?
+Speaker 2:  Hmm। मतलब, history से निकाल दे, कुछ मिल जाए तो ठीक है, नहीं मिले तो of course।
+Siddharth Pg (You):  नहीं मिले तो खुद का लगाएगा।
+Speaker 2:  तो code देखना ही पड़ेगा। Code तो ultimately वैसे भी देखना पड़ेगा fix करने के लिए, right?
+Siddharth Pg (You):  हाँ।
+Speaker 2:  Okay, all right, मतलब, code देखना ही पड़ेगा। वो तो bas- basically two step। First is finding history।
+Speaker 2:  If it will find something relevant, then it's good to go। Otherwise, uh, the second step is anyway there, it can act as a fallback for one, in which we will be iterating over the code, reviewing the changes, and try to fix it man- uh, not manually, like AI will use its brain and try to fix it, if it, if it doesn't have anything from the past।
+Speaker 2:  And if it has something from the past, it will take that for reference and try to fix it। So this step two will be there anyway।
+Speaker 2:  This step one of identifying history is, is used like, uh, for any।
+Siddharth Pg (You):  Context।
+Speaker 2:  Context, yeah, exactly।
+Siddharth Pg (You):  हाँ। So anyways are agent is making hypothesis about the error।
+Speaker 2:  Right।
+Siddharth Pg (You):  So if it finds similar error in the history, then it will support some hypothesis। And if it doesn't find any, uh, similarity in history, even then it will go by its own hypothesis, which makes।
+Speaker 2:  Right, exactly।
+Siddharth Pg (You):  Yeah, so history was just to give the agent the right context। Even if there is no history, it will work on its own, uh, investigations, like the code, recent changes, its own hypothesis which it, which it makes।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Based on the evidence।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Right।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Okay, what is।
+Speaker 2:  T10।
+Siddharth Pg (You):  What happens after the handoff on missing data? Okay, question, uh, साइड किया तो, question 30, state the gap, share what exists, ask a human, or escalate। Okay।
+Siddharth Pg (You):  Conflict: it does not say who receives the handoff at 2 am, or whether users stayed down meanwhile। Okay।
+Siddharth Pg (You):  Settle: does incomplete evidence stop all actions, or, or only actions that depend on knowing the cause? Okay, what was question 13 exactly?
+Siddharth Pg (You):  An AI system cannot stabilize the root cause because telemetry is incomplete; how would you, how should it behave? So what we discussed in question 13 is कि अगर उसके पास sufficient evidence नहीं है, तो it should not guess, uh, guess anything based on whatever data it has।
+Siddharth Pg (You):  It should give, like, these are the possibilities, and that's it। And, uh, it should act like, uh, like, these are the possibilities, and these are my findings based on whatever metrics I have।
+Siddharth Pg (You):  I don't have the full context, but this is my suggestion, you should fix it, or check these first। Okay।
+Siddharth Pg (You):  So ये हम लोगों ने सोच- वो करा था, discussed। 
+Siddharth Pg (You): ठीक है, तो इसमें क्या बोल रहा है, it does not say who receives the handoff at 2 am। तो basically, as we discussed पीछे भी ना, कि handoff तो हम on-call को ही कर रहे हैं, ठीक है? मतलब, incident का जो भी हमारे पास final notification है, या P0, P1 approve कराना है, या ultimately deployment भी, तो वो तो, क्या बोलते हैं उसको, उसी बंदे को देना पड़ेगा हमें, on-call engineer को, है ना?
+Speaker 2:  Hmm।
+Siddharth Pg (You):  तो उसमें तो conflict अब नहीं होने चाहिए, I think, वो हम लोगों ने, क्योंकि पीछे discuss नहीं, क्योंकि हमने पीछे discuss कर रहे थे, कभी on-call engineer और कभी team owner। मतलब, repo owner का ऐसा। तो I think वो थोड़ा conflict लगा होगा इससे।
+Siddharth Pg (You):  But now to be sure, कि हम on-call engineer को ही play में रख रहे हैं, बस। है ना?
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Right। और, uh, and share what exists, ask for a human or escalate। So of course, ask for human जो हम लोगों ने तब भी बोला था, I think we agree with this अभी भी।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  क्योंकि फालतू कुछ करने से तो time waste ही है।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Uh, तो settle: does incomplete evidence stop all actions, or only actions that depend on knowing the cause? मतलब, all actions भी बंद करने की जरूरत नहीं है। मतलब, मान लो कि, uh, तुमने suggestions दे दिए, कि, मतलब, अगर तुम suggestions भी दे पा रहे हो, being an AI agent, I think it's good।
+Siddharth Pg (You):  और maybe उसके बाद, the human can give its input, like, kind of a chatbot जो हमने बाद में भी discuss किया, कि human can ask for changes, right? So that thing can—human can give input, and based on that, you can work।
+Siddharth Pg (You):  So we should not stop all actions, or maybe we just, we just restrict ourselves, कि भाई, इतना कर लेते हैं, बाकी human के basis पे हम कर लेंगे, उनके response के basis पे।
+Speaker 2:  Uh, so the settlement is, incomplete evidence stops the fixing action, but it does not stop the, uh, hypothesis action। It will still give the human, uh, what it thinks about the root cause, backing by whatever evidence it has. So it will try to give the human a direction।
+Speaker 2:  It will stop the actions of fixing the cause। यही है ना?
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Okay। तो T10 is done। तो 2 am पे अपना वो बंदा आएगा, on-call engineer।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  T11।
+Siddharth Pg (You):  It is trusted checklist or a track record। 15 lists controls: traceable sources, visible reasoning, no invention; human control: visible tests। Conflict: control makes the platform checkable।
+Siddharth Pg (You):  They do not show it is usually right। Engineers trust tools that have earned it।
+Siddharth Pg (You):  Settle: what history would an engineer need to see before relying on it? Does the level of trust and so autonomy change over time?
+Siddharth Pg (You):  15th question। Engineers refuse to trust an AI system with production incidents; what evidence controls and guarantees would make them comfortable using it?
+Siddharth Pg (You):  हमने बोला, traceable sources, visible reasoning, no invention, human control; visible tests। Conflict is: controls make the platform checkable।
+Siddharth Pg (You):  Um, they do not show it usually right। Engineers trust tools that have earned it।
+Siddharth Pg (You):  Hmm। What history does an engineer need to see before relying on it?
+Siddharth Pg (You):  Does the level of trust and so autonomy change over time? I mean, sticking to our 15th answer: if the agent is able to give traceable source, कि let's say, इस code में error है, करके अगर उसने वो file और वो code की length उसको बता दी, तो agent भी खुद से जाके देख सकता है ना, कि हाँ, इस code में error हो सकता है कि नहीं हो सकता है।
+Siddharth Pg (You):  और let's say, dependency error है, तो उसने बोल दिया कि ये dependency है, और उसने exact point कर दिया, कि ये dependency इस function को linked है, इसलिए error आ रहा है। तो I think that will be enough trustable factor, because the evidence is from their own code base, not from the internet।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  Hmm। So I think, by looking at the evidence and the sources, कि वो evidence कहाँ से आया, that will be the major foundation। And then as the agent goes on, the test results and everything, uh, I think that also the human can run themselves, ना, tests वगैरह, to reproduce the results।
+Speaker 2:  Hmm। मतलब, also हम लोग, मतलब, past incident के records भी दे ही रहे हैं, मतलब कि अगर मान लो मिला तो।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  So I think that will also help us anyway।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  मतलब, अगर तुम्हें human का justification चाहिए, मतलब, कि भाई, this is correct, तो I think that's it, like सही है, हाँ, इसमें और तो क्या ही add करेंगे।
+Siddharth Pg (You):  Wait, speaking about the test cases, right, before deployment or, uh, edge cases, something like that।
+Speaker 2:  Uh, no, bro, like, um, like, what are the factors which an engineer needs to trust the agent? That is the question।
+Siddharth Pg (You):  Like how you will trust।
+Speaker 2:  What history।
+Siddharth Pg (You):  So, uh, with the fix time, like, uh, any— after fixing also, it's to test, right, whether the feature is breaking, with the impact of that, are there people breaking or not?
+Speaker 2:  Um, no, like, uh, let's say the agent has fixed something, and the agent is giving some suggestions to the engineer। How should the engineer trust the AI?
+Siddharth Pg (You):  Okay।
+Speaker 2:  Or its suggestions?
+Speaker 2:  So what we are saying is, if it gives traceable sources, like if it points to the exact code base, exact code length, exact dependencies, and then it states the error, then the engineer can also go and verify।
+Siddharth Pg (You):  Just to cross-verify that, that's what you mean?
+Speaker 2:  Hmm। Visible reasoning। So engineer can see if it's an actual vulnerability or not।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  And then also visible tests।
+Siddharth Pg (You):  Okay।
+Speaker 2:  What tests the agent is performing, so that the human can also, uh, reproduce the tests, same tests।
+Siddharth Pg (You):  Okay।
+Speaker 2:  So then they'll get the same output, and they'll, they'll be able to believe it।
+Siddharth Pg (You):  Yeah।
+Speaker 2:  I think that's it now, right? T11?
+Siddharth Pg (You):  Hmm। मतलब, T11 तो इतना ही था, फिर उसके आगे भी कुछ है क्या? Unstated assumptions भी निपटा देते हैं, फिर we can conclude, I think, right?
+Speaker 2:  हाँ। So these were our, uh, tension points। We resolved 11 tension points।
+Speaker 2:  Now moving to the unstated assumptions। The answers just on the last 10 things we need to trust true without saying no, without saying so।
+Speaker 2:  The worksheet requires each to be marked provisional। Then owner and a condition for validating it।
+Speaker 2:  The last column is a question that condition should answer। Fill in the owner।
+Speaker 2:  Owner क्या है?
+Siddharth Pg (You):  Owner हम लोग हैं क्या?
+Speaker 2:  Hmm।
+Speaker 2:  Marked provisional मतलब क्या, भाई?
+Siddharth Pg (You):  Uh, I think।
+Speaker 2:  Something is temporary conditional or not yet final, pending further review। Declare initial steps or requires others। Okay, okay।
+Speaker 2:  Marked provisional का मतलब, uh, नहीं, वो मैंने goal किया था।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Marked provisional का मतलब ये है कि अब के लिए ये सही है, but future का हम बता नहीं सकते। It's conditional।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  कि भाई, ये देखो, अब के लिए सही है, पर future में logs का scene हो गया तो हम बता नहीं सकते। ऐसे।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  Hmm।
+Siddharth Pg (You):  ठीक है।
+Speaker 2:  But ये करना क्या है?
+Siddharth Pg (You):  इसमें assumption है, और ये हमारे assumptions ही write कर रहा है, कुछ है क्या?
+Speaker 3:  Leader, office है।
+Siddharth Pg (You):  It is writing our assumptions।
+Speaker 3:  Wait a minute, what? Office?
+Speaker 2:  Hmm।
+Speaker 2:  Unstated assumptions। The answers listed in at least 10 things seem to trust true references.
+Speaker 2:  It also becomes useful marked provisional, because unlocked is a condition for validating it। Last column is a question that conditions should answer।
+Siddharth Pg (You):  Hmm।
+Speaker 2:  I think ये answer करना है हमें।
+Speaker 2:  ये questions।
+Siddharth Pg (You):  Okay। Comment। Okay। 
+Siddharth Pg (You): ठीक है। एक मिनट, एक मिनट देना मेरे को, ना।
+Speaker 2:  Hmm।
+
+
+
+
+Siddharth Pg (You): Started.
+Speaker 2:  Logs, metrics, okay.
+Siddharth Pg (You):  Assumption: logs, metrics, and history exist and are reachable. Yes.
+Speaker 2:  How many?
+Siddharth Pg (You):  A serial incident revision is usually recorded.
+Speaker 2:  मतलब, I think, सारे ही रिकॉर्ड होने चाहिए, मतलब, या फिर— जैसे मान लो, existing में भी है, क्या होता है, अगर कोई एक कंपनी use कर रही है, तो वो कुछ तो use करती है, मान लो बहुत सी कंपनीज़ Jira use करती हैं, or something like that. वहाँ पे वो रिकॉर्ड करते हैं, मतलब, ticket assign होते हैं किसी बंदे को, तो उसपे चीज़ें डाली जाती हैं, और logs तो generally रहते ही हैं, हर चीज़ के, ठीक है, और generally कंपनीज़ इन चीज़ों को maintain करके रखती हैं
+Speaker 2:  कि क्या पुराने issues आए थे, क्योंकि फिर future में काम आते हैं वो, ठीक है, मान लो, ये है तो लोगों के लिए काम आते हैं, तो I think, मान लो, ये भी नहीं बोल सकते कि सारे हैं, but consider कर सकते हैं कि हमें last 6 months के या 1 साल का तो data मिल ही जाएगा, मतलब, now companies are more aware about their data, right, तो मिल जाएगा, I think, मतलब, मेरा opinion तो ये है, मिल जाएगा generally, if the कोई वो बहुत major deal
+Speaker 2:  नहीं है, तो हम, I think, 6 months assume करके कर सकते हैं कि मान लो, हम जिस कंपनी में देने जा रहे हैं, हम उनसे बोलेंगे कि भाई, अपने past 6 months का हमें data तो दे ही दो, logs वगैरह का, and let's see, फिर हम उसपे नहीं देंगे तो फिर आगे की बात अलग है, but हमें logs और metrics तो लाइव भी चाहिए होंगी उनकी, तो हाँ, that is one thing which we require, मतलब, हाँ, assumption भी है, तो ठीक assumption है, मतलब, मतलब, हम इसे
+Speaker 2:  known मान सकते हैं।
+Siddharth Pg (You):  So this assumption is a known, and 100% of the real incident evidence is recorded.
+Speaker 2:  हम्म।
+Siddharth Pg (You):  Okay. A2: Past incidents are documented well enough to learn from. I think.
+Siddharth Pg (You):  Is there a record of what fixed previous incidents, and is it trustworthy? Yes, there is a record, and it is also trustworthy because it is documented by the organization itself.
+Siddharth Pg (You):  It is also a known. And commit and PR history points to the right person.
+Siddharth Pg (You):  Does the person who changed code also own fixing it? So I don't think they own fixing it, because obviously engineers को they are not assigned features for their lifetime, right, कि भाई, तूने ये 2 साल पहले बनाया, तू ही इसको fix करेगा।
+Siddharth Pg (You):  It doesn't work like that. So creation and owning the fixing are two different things.
+Siddharth Pg (You):  Fixing is owned by the person whoever approves the agent's response. It could be an on-call engineer at 2 AM, or it could be some other engineer.
+Siddharth Pg (You):  So it is mostly not the person who changed the code. They are two different people.
+Speaker 2:  Right.
+Siddharth Pg (You):  Any opinion? Or same?
+Speaker 2:  No, it's same. And also, now we are not— like, earlier we were thinking about this commit and PR data to, you know, assign it to the team owner, but now we are assigning it to SRE, or sorry, not SRE.
+Siddharth Pg (You):  On-call.
+Speaker 2:  On-call one. So yes, we can assume we don't need it anymore.
+Siddharth Pg (You):  Okay, done. So A4: One accountable owner exists per service. How many services have no clear owner today?
+Siddharth Pg (You):  Uh, I think this is a wrong assumption.
+Speaker 2:  हम्म।
+Siddharth Pg (You):  Service का owner थोड़ी होता है।
+Speaker 2:  मतलब, depend होता है, मतलब, बहुत से क्या होता है, या तो दो-तीन, मतलब, एक service का एक on-call engineer होता है, या हो सकता है कोई दो-तीन service का एक on-call engineer हो, but होगा, मतलब, मान लो, अगर मान लो service छोटी भी है, मतलब, दो-चार छोटी-छोटी services हैं, तो तीन-चार का मिला के एक on-call engineer होगा ही होगा, ऐसा नहीं है कि नहीं होगा, या फिर अगर engineer on-call नहीं होगा तो there will be one accountable person
+Speaker 2:  for it. ठीक है, but अभी हम consider कर रहे हैं कि on-call will be there, क्योंकि हमने accountability वाली चीज़ हटा दी है, right, वो जो हम back iterate कर रहे थे और वो सब, कि person assign कर दो, वो भी issue, हमने माना है कि on-call रहेगा, और on-call को ही सारी चीज़ें होंगी, generally on-call रहता ही है, maybe वो कोई team का बंदा ही हो जो और चीज़ों पे भी काम कर रहा हो, but हाँ, उसे ही वो on-call assign
+Speaker 2:  कर देते हैं फिर।
+Siddharth Pg (You):  But कोई ना कोई तो होगा ही accountability लेने के लिए per service।
+Speaker 2:  हाँ, एक बंदा होना चाहिए, अगर कोई नहीं है तो फिर वो ultimately, या तो मान लो, फिर आप उसे manager को assign करोगे, फिर वो manager अपने हिसाब से देखेगा कि किसको क्या करना है।
+Siddharth Pg (You):  ठीक है, so then every service has a clear owner.
+Speaker 2:  हम्म।
+Siddharth Pg (You):  It could either be the on-call or the normal engineer or the manager. Depends on the organization.
+Speaker 2:  Right.
+Siddharth Pg (You):  Okay. A5 is the failure can be reproduced outside production? ये हमने बात की थी, yes ना?
+Speaker 2:  Yes, we will have a sandbox environment, and there this exact same code will be replicated. So yes.
+Siddharth Pg (You):  Yes, the reference failure can be triggered in a safe copy. Yes. So A6: Engineers' main plan is gathering— main pain is gathering scattered information.
+Siddharth Pg (You):  Where does an engineer's incident time usually go?
+Speaker 2:  तो basically, the main, मतलब, we discussed in last meeting also, the main time is, the main consumption of time for an engineer is to investigate the issue, you know, to find the hard shape, like the root cause of that issue, that is the main, that is the most time-consuming thing, okay, so, and this is what it is mentioning also, engineers' main pain is gathering scattered information, like it, the engineer has to check logs, metrics, and things like that, so, yeah, I agree, like, this is the
+Speaker 2:  main point, and, like, this is the main pain.
+Siddharth Pg (You):  हम्म।
+Speaker 2:  Okay.
+Siddharth Pg (You):  Okay, so looking at the logs, analyzing where the actual cause is, this is the main.
+Speaker 2:  Yes.
+Siddharth Pg (You):  Okay. A7: Noise can be told apart from real incidents reliably. What does a wrongly dismissed real alert cost?
+Siddharth Pg (You):  ये हमने निकाल दिया ना MVP में।
+Speaker 2:  Okay, wrongly dismissed में, हम्म, मतलब, MVP में हमने क्या निकाला exactly, मतलब, क्या बोल रहे हो आप, एक बार।
+Siddharth Pg (You):  कि अभी एक error आ गया, वो noise है कि actually considerable error है, ये हमने निकाला है कि लगाया है हमने MVP में।
+Speaker 2:  नहीं, तो हमने तो फिर वहाँ पे priority assign करने के लिए एक बंदा लगा दिया था ना, तो वो बंदा देख लेगा फिर वो कि noise है कि वो अच्छा incident है, मान लो, priority assign करना is similar to that only, right, कि is it a noise or is it a real issue, तो, तो, और अगर पूछना चाह रहे हैं कि अगर एक wrongly dismissed है, मतलब, कोई, मतलब, AI SRE ने हमारे बोला कि this is an issue, but, तो उसका कोई ज्यादा cost नहीं है, क्योंकि,
+Speaker 2:  क्योंकि हमने first layer पे ही एक बंदा लगा रखा है for human validation, तो I don't think so it will cost much, ठीक है।
+Siddharth Pg (You):  Okay, so A7 does not hold true because we have included a human checkpoint where the agent assigns, I mean, makes hypotheses about the error, so the human validates the hypothesis, so it cannot wrongly be dismissed because the human is involved at the initial step.
+Speaker 2:  Right, exactly.
+Siddharth Pg (You):  A human is available to approve when needed. ये भी yes है, who is reachable at 2 AM, the on-call engineer is reachable, how fast depends, but, आपको ही बोलना पड़ेगा how fast.
+Speaker 2:  मतलब, how fast, मतलब, रात में तो generally सो ही रहे होते हैं यार on-call वाले भी, ठीक है, पर अगर वहाँ पे तुम्हारी multiple region services हैं, ठीक है, तो हो सकता है दो on-call engineer हों, ठीक है, मतलब, बहुत सी कंपनीज़ night duty भी लगाती हैं फिर कुछ लोगों की, पर generally उतना नहीं होता, तो तुम ऐसे assume कर सकते हो कि on-call engineer है तो वो रात के 2 बजे तो मैं नहीं मानता कि approve करेगा, पर assume कर लो कि 6
+Speaker 2:  बजे कर देगा, क्योंकि वो on-call पे है, वरना normal engineer तो नहीं करता वो सीना, so I think how fast का मतलब, I think, if it's 2 AM in the night, it will be, you know, reviewed within 3 to 4, maybe 4 to 5 hours, I think, मतलब, depends.
+Siddharth Pg (You):  So depends on the timing of the day. If it's midnight, then usually they start around 6 AM, but if it's the daytime when they are in their working hours, then it will only even be in a couple of minutes, right?
+Speaker 2:  हम्म।
+Siddharth Pg (You):  Minutes or at max 1 hour, I think.
+Speaker 2:  Right, right.
+Siddharth Pg (You):  बस reachability की बात है, तो वो तो minutes में भी online आ जाएंगे ना।
+Speaker 2:  हम्म, हम्म।
+Siddharth Pg (You):  तो if it's in the daytime, if it's in the working hour range, then it's in minutes, but if it's in midnight, then they do it at like 6 AM.
+Speaker 2:  Right.
+Siddharth Pg (You):  But, uh, depends. If it's like 11 PM or 12 AM, even then they can do it jildi only. Because as you said, night duty वाले 12 को तो नहीं सोएंगे।
+Speaker 2:  हम्म, मतलब, depends on।
+Siddharth Pg (You):  10 to 12 सभी रहते हैं आजकल।
+Speaker 2:  हाँ।
+Siddharth Pg (You):  This depends from human to human, but on an average, 3 to 4 hours ले लेंगे, या 2 ले लें।
+Speaker 2:  मतलब, depends on human to human, and company की policies पे भी थोड़ा depend करता है, मान लो, अगर company बोल रही है कि नहीं, हमें हमेशा 100% uptime चाहिए, ठीक है, तो वो क्या करेगा, वो double shift या triple shift में अलग-अलग engineers लगाएगा, मतलब, 8-8 hours की 3 shifts पे, ठीक है, मान लो, morning से 6 से 12 मैं काम कर रहा हूँ, 6 से 2, 2 से 10 एक, और 10 से 6 फिर एक और, तो, तो, मतलब, time hardly 30 minutes का
+Speaker 2:  है, फिर तो 10 minutes भी नहीं होना चाहिए, ठीक है, because all are in working hours, but बहुत सी कंपनीज़ ऐसी होती हैं जो एक ही रखते हैं, ठीक है, they are okay with, like, something going down, they have some time, right, तो फिर भी, I think, 2 से 3 घंटे पकड़ लेते हैं, like, roughly, it will take 2 to 3 hours, minimum, not minimum exactly, but।
+Siddharth Pg (You):  Average.
+Speaker 2:  Average, right.
+Siddharth Pg (You):  Okay, so 2 to 3 hours on an average. A9: Is a baseline for human-only resolution can be measured? Is current time to resolve recorded anywhere today?
+Siddharth Pg (You):  As Rohan said, it is, no?
+Speaker 2:  हम्म, मतलब।
+Siddharth Pg (You):  Yeah, so current, uh, hmm, that also, I think it is classified, no?
+Siddharth Pg (You):  Error P0, P1, उस हिसाब से, I think, no?
+Speaker 2:  हाँ, मतलब, अगर उसे, मतलब, कि होना चाहिए, like, it will be identified based on priority, and, like, the type of error, अगर बहुत बड़ा error है, तो of course वो अगर P0 भी है, but still वो, मतलब, time लेगा ही थोड़ा, right, अगर छोटा error है, और, मतलब, P0 है, तो वो जल्दी ले लेगा, तो, but हाँ।
+Siddharth Pg (You):  But recorded तो है ना कि time कितना लगा था पहले।
+Speaker 2:  हाँ, हाँ, yeah, it will be recorded।
+Siddharth Pg (You):  Okay, so current time to resolve is recorded in the organization.
+Speaker 2:  हम्म।
+Siddharth Pg (You):  A10: Users of the platform are engineers only. Who else reads incident outputs? Lead, support, management?
+Speaker 2:  मतलब, lead, support, and management, ठीक है, leads, मतलब, I think they are talking about team leads or something like that, right?
+Siddharth Pg (You):  हाँ, right, right, team lead।
+Speaker 2:  उनके पास तो होता ही है, management के पास भी रहते ही हैं सारे access, अब वो देखें न देखें, depends on them, ठीक है, but हाँ, उनके पास access तो रहते हैं, but वो देखते नहीं हैं, ठीक है, but maybe manager देख भी सकता है, ठीक है, क्योंकि managers generally metrics और ये सब चीज़ों पे काम करते हैं, ठीक है, कि उनके product, product जो है, उसका क्या scene है, कितने लोग उसे use कर रहे हैं, और, तो, मतलब, हाँ, I think होना चाहिए, incident read करने
+Speaker 2:  का तो सबके पास होना चाहिए access, write का न हो, वो चलेगा, पर read का होना चाहिए, और।
+Siddharth Pg (You):  Okay.
+Speaker 2:  हम्म, और users of the platform are engineers only, मतलब, नहीं, ऐसा नहीं है, मतलब, user तो कोई भी हो सकता है, no?
+Siddharth Pg (You):  हम्म, engineer का इसका मतलब होगा शायद जो fix कर पाए, मतलब, ability to fix।
+Speaker 2:  हाँ, तो I think user तो engineer ही होगा, but read कौन कर सकता है, read, I think, कर सकता है management, lead, and support people भी, I think they should have access कि what the engineer is doing, but, मतलब, हाँ, manage, इसका user तो हमारे product का engineer ही होगा, on-call engineer, basically, for our MVP।
+Siddharth Pg (You):  Okay, so basically the engineers would be the users, but everyone, including the team leads and the managers, can read and see what's going on.
+Speaker 2:  Yes, yes.
+Siddharth Pg (You):  Okay.
